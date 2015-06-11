@@ -1,0 +1,21 @@
+/* --== Login Page ==-- */
+.prompt {
+    box-sizing: border-box;
+    padding: 90px 0;
+    margin-bottom: 90px;
+    text-align: center;
+    background: #1476a6;
+    color: #fff;
+}
+.login {
+    box-sizing: border-box;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 300px;
+}
+.btn.main {
+    width: 100%;
+}
+.brand-title, .brand-tagline { margin: 0; }
+.brand-title { text-transform: uppercase; font-size: 4rem; margin-bottom: 2rem;}
+.brand-tagline { font-size: 1.8rem; opacity: 0.4;}

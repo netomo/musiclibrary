@@ -1,0 +1,33 @@
+{% extends 'groovewolf/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<header class="prompt">
+    <div>
+        <h1 class="brand-title">GrooveWolf</h1>
+        <h2 class="brand-tagline">Tu librería de música</h2>
+    </div>
+</header>
+<div>
+    <div>
+        <section class="login">
+            <form action="{% url 'login' %}" method="post">
+                <div class="form-group">
+                    <div class="form-group">
+                        <input type="text" name="username" id="user" placeholder="Usuario" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" id="password" placeholder="Contraseña" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary main">Acceder</button>
+                    </div>
+                    {% csrf_token %}
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

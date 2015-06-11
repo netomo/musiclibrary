@@ -40,12 +40,18 @@ DATABASES = {
     }
 }
 
+
 # Internationalization
 LANGUAGE_CODE = 'es-PE'
 TIME_ZONE = 'America/Lima'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+
+# Login URLS
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 
 # Static files (CSS, JavaScript, Images)
