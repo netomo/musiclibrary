@@ -2,7 +2,11 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+
+
+COLLECTION_KEYNAME = '_collection'
 
 
 class UserProfile(models.Model):
@@ -12,6 +16,12 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return self.user.username
+
+    def get_collection(self):
+        try:
+            return self.playlist_set.get(system=True, name=COLLECTION_KEYNAME)
+        except ObjectDoesNotExist:
+            return self.playlist_set.create(system=True, name=COLLECTION_KEYNAME)
 
 
 class Artist(models.Model):
@@ -73,7 +83,7 @@ class Song(models.Model):
     lyrics = models.TextField(blank=True)
     video = models.URLField(blank=True, help_text='Link to Youtube')
     created_by = models.ForeignKey(UserProfile)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         ordering = ['album', 'track_nro', 'name', ]
@@ -84,6 +94,7 @@ class Song(models.Model):
 
 
 class PlayList(models.Model):
+    system = models.BooleanField(default=False)
     name = models.CharField(max_length=50)
     author = models.ForeignKey(UserProfile)
     created = models.DateTimeField(auto_now_add=True)
@@ -94,12 +105,21 @@ class PlayList(models.Model):
     def __unicode__(self):
         return self.name
 
+    def add_item(self, song, weight=None):
+        collection = self if self.name == COLLECTION_KEYNAME else self.author.get_collection()
+
+        if collection.items.filter(song=song).count() == 0:
+            collection.items.create(song=song)
+
+        if not (self.name == COLLECTION_KEYNAME):
+            self.items.create(song=song)  # a song can be many times in the same playlist
+
 
 class PlaylistItem(models.Model):
-    playlist = models.ForeignKey(PlayList)
+    playlist = models.ForeignKey(PlayList, related_name='items')
     song = models.ForeignKey(Song)
     added = models.DateTimeField(auto_now_add=True)
-    weight = models.SmallIntegerField()
+    weight = models.SmallIntegerField(null=True, blank=True)  # TODO: sort the items in the list by this field...
 
     class Meta:
         ordering = ['weight', 'added']
