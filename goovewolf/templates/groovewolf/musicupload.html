@@ -3,50 +3,6 @@
 
 {% block title %}Upoloading{% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
-    <style>
-        .upload-feedback {
-        }
-        .file-description {
-            min-width: 300px;
-            margin: 0;
-        }
-        .filename {
-            display: inline-block;
-            width: 77%;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            font-style: italic;
-            color: #555;
-        }
-        .size {
-            color: #aaa;
-            float: right;
-        }
-        .results_on_deck {
-            min-height: 24px;
-        }
-        .progress_container {
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            border: 1px solid #548c8c;
-            width: 100%;
-            height: 5px;
-            margin: 0 0 5px;
-        }
-        .progress {
-            width: 0;
-            background: #6bb39b;
-            height: 100%;
-        }
-
-    </style>
-{% endblock %}
-
-
 {% block content %}
 
 <header class="main navbar">
@@ -89,7 +45,7 @@
     </div>
 </header>
 
-<div class="content">
+<div class="container">
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 userspace">
             <div class="upload-selector">
@@ -139,9 +95,8 @@
             </td>
         </tr>
     </table>
-
-
 </template>
+
 {% endblock %}
 {% block extrabody %}
 <script>

@@ -27,3 +27,37 @@
     color: #9d9d9d;
     margin: 1em 0;
 }
+
+.upload-feedback {
+}
+.file-description {
+    min-width: 300px;
+    margin: 0;
+}
+.filename {
+    display: inline-block;
+    width: 77%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-style: italic;
+    color: #555;
+}
+.size {
+    color: #aaa;
+    float: right;
+}
+.progress_container {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid #548c8c;
+    width: 100%;
+    height: 5px;
+    margin: 0 0 5px;
+}
+.progress {
+    width: 0;
+    background: #6bb39b;
+    height: 100%;
+}
