@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Music Library - {% block title %}{% endblock %}</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'groovewolf/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'groovewolf/css/bootstrap-theme.css' %}">
+    <link rel="stylesheet" href="{% static 'groovewolf/css/main.css' %}">
+    {% block extrahead %}
+    {% endblock %}
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+
+{% block content %}
+{% endblock %}
+    <script src="{% static 'groovewolf/js/jquery-2.1.4.js' %}"></script>
+    <script src="{% static 'groovewolf/js/bootstrap.js' %}"></script>
+    <script src="{% static 'groovewolf/js/main.js' %}"></script>
+{% block extrabody %}
+{% endblock %}
+</body>
+</html>
