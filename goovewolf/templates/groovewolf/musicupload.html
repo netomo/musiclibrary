@@ -1,0 +1,151 @@
+{% extends 'groovewolf/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Upoloading{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        .upload-feedback {
+        }
+        .file-description {
+            min-width: 300px;
+            margin: 0;
+        }
+        .filename {
+            display: inline-block;
+            width: 77%;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-style: italic;
+            color: #555;
+        }
+        .size {
+            color: #aaa;
+            float: right;
+        }
+        .results_on_deck {
+            min-height: 24px;
+        }
+        .progress_container {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border: 1px solid #548c8c;
+            width: 100%;
+            height: 5px;
+            margin: 0 0 5px;
+        }
+        .progress {
+            width: 0;
+            background: #6bb39b;
+            height: 100%;
+        }
+
+    </style>
+{% endblock %}
+
+
+{% block content %}
+
+<header class="main navbar">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
+                <span class="sr-only">Change Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">GrooveWolf</a>
+        </div>
+        <div class="collapse navbar-collapse" id="main-navbar-collapse">
+            <form class="navbar-form navbar-left" id="search-form" role="search">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="search-input" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" id="search-button">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Change Password</a></li>
+                        <li><a href="{% url 'logout' %}">Close Session</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<div class="content">
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 userspace">
+            <div class="upload-selector">
+                <input name="musicfiles" id="musicfiles" class="btn" type="file" multiple="" style="display: inline-block;"/>
+                <button type="button" id="submitter" class="btn btn-primary" style="float: right; display: inline-block;">Start upload</button>
+                <p class="help">Select your music files you want to upload and make sure that the information is correct in the file queue, then press "Start Upload", you can repeat this process several times without leaving this page =D.</p>
+            </div>
+
+            <table class="table uploads">
+                <thead>
+                    <tr>
+                        <th>MP3</th>
+                        <th>Name</th>
+                        <th>Artist</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<template>
+    <table class="table">
+        <tr class="upload-feedback">
+            <td class="file">
+                <p class="file-description">
+                    <span class="filename"></span>
+                    <span class="size"></span>
+                    <span class="status"></span>
+                </p>
+                <div class="progress_container"><div class="progress"></div></div>
+            </td>
+            <td class="name">
+                <input maxlength="100" type="text" class="song-name form-control">
+            </td>
+            <td class="artist autocomplete" data-autocompletechannel="artists">
+                <input type="text" id="songartistID_text" value="" autocomplete="off" class="ui-autocomplete-input form-control">
+                <input type="hidden" id="songartistID" value="" class="ui-autocomplete-value artist-id">
+                <span class="artist-name"></span>
+            </td>
+            <td class="action">
+                <button class="btn btn-default btn-xs">Remove</button>
+            </td>
+        </tr>
+    </table>
+
+
+</template>
+{% endblock %}
+{% block extrabody %}
+<script>
+    window['musicupload_url'] = '{% url 'music_upload' %}';
+</script>
+<script src="{% static 'groovewolf/js/uploads.js' %}"></script>
+{% endblock %}

@@ -77,7 +77,7 @@ class Song(models.Model):
     artist = models.ForeignKey(Artist, null=True, blank=True, related_name='songs')
     featuring = models.ManyToManyField(Artist, blank=True, related_name='featuring_songs')
     genre = models.ForeignKey(Genre, null=True, blank=True)
-    album = models.ForeignKey(Album)
+    album = models.ForeignKey(Album, null=True, blank=True)
     track_nro = models.PositiveSmallIntegerField(null=True, blank=True)
     file = models.FileField(upload_to='songs', blank=True)
     lyrics = models.TextField(blank=True)
@@ -97,7 +97,7 @@ class PlayList(models.Model):
     system = models.BooleanField(default=False)
     name = models.CharField(max_length=50)
     author = models.ForeignKey(UserProfile)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         ordering = ['-created', 'author', 'name', ]
@@ -118,7 +118,7 @@ class PlayList(models.Model):
 class PlaylistItem(models.Model):
     playlist = models.ForeignKey(PlayList, related_name='items')
     song = models.ForeignKey(Song)
-    added = models.DateTimeField(auto_now_add=True)
+    added = models.DateTimeField(auto_now_add=True, db_index=True)
     weight = models.SmallIntegerField(null=True, blank=True)  # TODO: sort the items in the list by this field...
 
     class Meta:

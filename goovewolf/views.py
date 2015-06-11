@@ -31,3 +31,32 @@ def index(request):
 @require_GET
 def collection(request, username):
     return render(request, 'groovewolf/collection.html')
+
+
+@login_required
+def music_upload(request):
+    if request.method == 'GET':
+        return render(request, 'groovewolf/musicupload.html')
+
+    if request.method == 'POST':
+        file_types = ['audio/mpeg', 'audio/mp3', 'audio/m4a']
+        music_file = request.FILES.values()[0]
+        profile = UserProfile.objects.get(user=request.user)
+
+        if music_file.content_type not in file_types:
+            print(music_file.content_type)
+            return JsonResponse({'success': False, 'reason': 'Allowed filetypes: mp3, m4a'})
+
+        songdata = {
+            'file': music_file,
+            'name': request.POST['name'],
+            'created_by': profile
+        }
+
+        if request.POST['artist']:
+            songdata['artist'] = Artist.objects.get(id=int(request.POST['artist']))
+
+        song = Song.objects.create(**songdata)
+        profile.get_collection().add_item(song)
+
+        return JsonResponse({'success': True, 'id': song.id, 'url': song.file.url})
