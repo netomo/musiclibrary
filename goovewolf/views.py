@@ -6,7 +6,7 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth.views import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from .models import UserProfile, Artist, Album, Song, PlayList, PlaylistItem
+from .models import UserProfile, Artist, Album, Song, Playlist, PlaylistItem
 
 
 @never_cache

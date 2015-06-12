@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 
@@ -50,11 +51,11 @@ class Genre(models.Model):
 
 class Album(models.Model):
     ALBUM_TYPES = (
-        ('s', 'Studio'),
-        ('l', 'Live'),
-        ('n', 'Single'),
-        ('d', 'Demo'),
-        ('b', '_bootleg'),
+        ('S', 'Studio'),
+        ('L', 'Live'),
+        ('N', 'Single'),
+        ('D', 'Demo'),
+        ('B', '_bootleg'),
     )
 
     name = models.CharField(max_length=150)
@@ -92,8 +93,14 @@ class Song(models.Model):
         feats = [a.name for a in self.featuring.all()]
         return '%s - %s' % (self.name, self.artist.name if self.artist else ', '.join(feats))
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.file and not self.id:
+            self.feed_set.create(action='U', profile=self.created_by)
 
-class PlayList(models.Model):
+        return super(Song, self).save(force_insert, force_update, using, update_fields)
+
+
+class Playlist(models.Model):
     system = models.BooleanField(default=False)
     name = models.CharField(max_length=50)
     author = models.ForeignKey(UserProfile)
@@ -114,12 +121,48 @@ class PlayList(models.Model):
         if not (self.name == COLLECTION_KEYNAME):
             self.items.create(song=song)  # a song can be many times in the same playlist
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.id:
+            self.feed_set.create(action='C', profile=self.author)
+
+        return super(Playlist, self).save(force_insert, force_update, using, update_fields)
+
 
 class PlaylistItem(models.Model):
-    playlist = models.ForeignKey(PlayList, related_name='items')
+    playlist = models.ForeignKey(Playlist, related_name='items')
     song = models.ForeignKey(Song)
     added = models.DateTimeField(auto_now_add=True, db_index=True)
     weight = models.SmallIntegerField(null=True, blank=True)  # TODO: sort the items in the list by this field...
 
     class Meta:
         ordering = ['weight', 'added']
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not (self.id or self.playlist.system):
+            self.playlist.feed_set.create(action='A', profile=self.playlist.author, playlist=self.playlist, song=self.song)
+
+        return super(PlaylistItem, self).save(force_insert, force_update, using, update_fields)
+
+
+class Feed(models.Model):
+    ACTIONS = (
+        ('U', 'uploaded'),
+        ('C', 'created playlist'),
+        ('A', 'added to playlist'),
+        ('L', 'listened'),
+        ('B', 'bookmarked'),
+        ('S', 'shared'),
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=2, choices=ACTIONS)
+
+    profile = models.ForeignKey(UserProfile)
+    playlist = models.ForeignKey(Playlist, null=True, blank=True)
+    song = models.ForeignKey(Song, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created', ]
+
+    def __unicode__(self):
+        return '%s %s' % (self.profile, self.get_action_display())

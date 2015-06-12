@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=150)),
                 ('pic', models.ImageField(upload_to='pics/albums', blank=True)),
-                ('album_type', models.CharField(max_length=1, choices=[('s', 'Studio'), ('l', 'Live'), ('n', 'Single'), ('d', 'Demo'), ('b', '_bootleg')])),
+                ('album_type', models.CharField(max_length=1, choices=[('S', 'Studio'), ('L', 'Live'), ('N', 'Single'), ('D', 'Demo'), ('B', '_bootleg')])),
                 ('description', models.TextField(blank=True)),
                 ('release', models.DateField(null=True, blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
@@ -43,6 +43,18 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='Feed',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('action', models.CharField(max_length=2, choices=[('U', 'uploaded'), ('C', 'created playlist'), ('A', 'added to playlist'), ('L', 'listened'), ('B', 'bookmarked'), ('S', 'shared')])),
+            ],
+            options={
+                'ordering': ['-created'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='Genre',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -55,11 +67,12 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='PlayList',
+            name='Playlist',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('system', models.BooleanField(default=False)),
                 ('name', models.CharField(max_length=50)),
-                ('created', models.DateTimeField(auto_now_add=True)),
+                ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
             ],
             options={
                 'ordering': ['-created', 'author', 'name'],
@@ -70,9 +83,9 @@ class Migration(migrations.Migration):
             name='PlaylistItem',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('added', models.DateTimeField(auto_now_add=True)),
-                ('weight', models.SmallIntegerField()),
-                ('playlist', models.ForeignKey(to='goovewolf.PlayList')),
+                ('added', models.DateTimeField(auto_now_add=True, db_index=True)),
+                ('weight', models.SmallIntegerField(null=True, blank=True)),
+                ('playlist', models.ForeignKey(related_name='items', to='goovewolf.Playlist')),
             ],
             options={
                 'ordering': ['weight', 'added'],
@@ -88,8 +101,8 @@ class Migration(migrations.Migration):
                 ('file', models.FileField(upload_to='songs', blank=True)),
                 ('lyrics', models.TextField(blank=True)),
                 ('video', models.URLField(help_text='Link to Youtube', blank=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('album', models.ForeignKey(to='goovewolf.Album')),
+                ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
+                ('album', models.ForeignKey(blank=True, to='goovewolf.Album', null=True)),
                 ('artist', models.ForeignKey(related_name='songs', blank=True, to='goovewolf.Artist', null=True)),
             ],
             options={
@@ -137,6 +150,24 @@ class Migration(migrations.Migration):
             model_name='playlist',
             name='author',
             field=models.ForeignKey(to='goovewolf.UserProfile'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='feed',
+            name='playlist',
+            field=models.ForeignKey(blank=True, to='goovewolf.Playlist', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='feed',
+            name='profile',
+            field=models.ForeignKey(to='goovewolf.UserProfile'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='feed',
+            name='song',
+            field=models.ForeignKey(blank=True, to='goovewolf.Song', null=True),
             preserve_default=True,
         ),
         migrations.AddField(
