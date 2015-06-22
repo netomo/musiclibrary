@@ -101,9 +101,9 @@
                         };
                     }
                     if (response.success) {
-                        filenode.find('.action').html('<i class="fa fa-check"></i>');
+                        filenode.find('.action').html('<span class="glyphicon glyphicon-ok-sign"></span>');
                     } else {
-                        filenode.find('.action').html('<i class="fa fa-exclamation-circle"></i>').attr('title', 'Algo salió mal =(...');
+                        filenode.find('.action').html('<span class="glyphicon glyphicon-exclamation-sign"></span>').attr('title', 'Algo salió mal =(...');
                     }
                 }
             };
@@ -166,11 +166,8 @@
                     continue;
                 }
 
-                songname = file.name.split('.');
-                songname.pop();
-                songname = songname[0].split(/-/);
-                songname = songname[songname.length - 1].trim();
-                songname = songname.split('_').join(' ');
+                songname = file.name.split('.')[0].split(/-/);
+                songname = songname[songname.length - 1].trim().split('_').join(' ');
 
                 filenode.find('.filename').text(file.name);
                 filenode.find('.size').text(size.value + size.unit);

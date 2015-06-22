@@ -95,9 +95,11 @@ class Song(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.file and not self.id:
-            self.feed_set.create(action='U', profile=self.created_by)
-
-        return super(Song, self).save(force_insert, force_update, using, update_fields)
+            s = super(Song, self).save(force_insert, force_update, using, update_fields)
+            self.feed_set.create(action='U', profile=self.created_by, song=s)
+            return s
+        else:
+            return super(Song, self).save(force_insert, force_update, using, update_fields)
 
 
 class Playlist(models.Model):

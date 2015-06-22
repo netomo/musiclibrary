@@ -1,10 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends 'groovewolf/base.html' %}
+{% load staticfiles %}
 
-</body>
-</html>
+{% block title %}Home{% endblock %}
+
+{% block extrahead %}
+
+{% endblock %}
+
+{% block content %}
+<header class="main navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
+                <span class="sr-only">Change Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">GrooveWolf</a>
+        </div>
+        <div class="collapse navbar-collapse" id="main-navbar-collapse">
+            <form class="navbar-form navbar-left" id="search-form" role="search">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="search-input" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" id="search-button">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.pk %}
+                <li><a class="music-upload" href="{% url 'music_upload' %}">Upload</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Change Password</a></li>
+                        <li><a href="{% url 'logout' %}">Close Session</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                    <li><a class="signup-btn" href="{% url 'signup' %}">Sign Up</a></li>
+                    <li><a class="login-btn" href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</header>
+<div class="jumbotron">
+  <div class="container">
+      <h1>Share your emotions!</h1>
+
+      <p>This is the new way to share your music, you can easily and quickly upload your music and listen it from anywhere without restrictions. You can see what your friends are uploading, see their collection and favorite songs.</p>
+{#      <p>Enjoy!</p>#}
+      <div class="alert alert-info" role="alert">Currently this is a closed pre-pre-alpha. <a href="https://github.com/netomo/musiclibrary">Learn more</a></div>
+
+  </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-primary feed-panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Going on...</h3>
+                </div>
+                <ul class="panel-body list-group">
+                    {% for action in feed %}
+                    <li class="list-group-item">
+                        <span class="user"><a href="#">{{ action.profile.user.username }}</a></span>
+                        <span class="action">{{ action.get_action_display }}</span>
+
+                        <div class="song">
+                            <div class="album"><img src="{{ action.song.album.pic.get_url }}" alt=""/></div>
+                            <span class="song-name">
+                                <a href="{{ action.song.file.url }}">{{ action.song.name }}</a>
+                            </span><br/>
+                            <span class="artist"><a href="#">{{ action.song.artist.name|default:'Unkown Artist' }}</a></span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <audio id="musicme" autoplay autobuffer controls>
+                <source src="">
+            </audio>
+        </div>
+    </div>
+</div>
+
+<template>
+    <div class="card userupload">
+        <span class="user"></span><span class="action"> uploaded </span>
+        <div class="song">
+            <div class="album"><img src="" alt=""/></div>
+            <span class="song-name"></span>
+            <span class="artist"></span>
+        </div>
+    </div>
+</template>
+
+{% endblock %}
+{% block extrabody %}
+    <script>
+        $('.song-name a').click(function(e) {
+            var musicme = document.getElementById('musicme');
+
+            e.preventDefault();
+
+            musicme.children[0].src = $(this).attr('href');
+            musicme.load();
+        });
+    </script>
+{% endblock %}

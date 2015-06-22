@@ -5,5 +5,6 @@ urlpatterns = patterns('goovewolf.views',
     url(r'^collection/(?P<username>\w+)/$', 'collection', name='collection'),
     url(r'^login/', 'login', name='login'),
     url(r'^logout/', 'logout', name='logout'),
+    url(r'^signup/', 'signup', name='signup'),
     url(r'^upload/', 'music_upload', name='music_upload')
 )

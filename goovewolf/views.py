@@ -1,12 +1,13 @@
 # coding=utf-8
 from __future__ import unicode_literals
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.views import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import UserProfile, Artist, Album, Song, Playlist, PlaylistItem
+from django.shortcuts import render, redirect
+from .models import User, UserProfile, Artist, Album, Song, Playlist, PlaylistItem, Feed
+from .forms import SignUpForm
 
 
 @never_cache
@@ -19,13 +20,35 @@ def logout(request):
     return auth_logout(request, template_name='groovewolf/login.html')
 
 
+@never_cache
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            user = User.objects.create_user(
+                data['username'],
+                data['email'],
+                data['password'],
+                first_name=data['first_name'],
+                last_name=data['last_name']
+            )
+            UserProfile.objects.create(user=user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+
+    return render(request, 'groovewolf/signup.html', {'form': form})
+
+
 @require_GET
 def index(request):
     context = {
-        'lastest_songs': Song.objects.order_by('-created')[0:100],
-        'adds': PlaylistItem.objects.order_by('-added')[0:100]
+        'lastest_songs': Song.objects.order_by('-created')[0:10],
+        'adds': PlaylistItem.objects.order_by('-added')[0:10],
+        'feed': Feed.objects.all()[0:10]
     }
-    return render(request, 'groovewolf/index.html')
+    return render(request, 'groovewolf/index.html', context)
 
 
 @require_GET
